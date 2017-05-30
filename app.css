@@ -1,0 +1,26 @@
+.list-container {
+  height: 500px;
+  width: 500px;
+  border: 1px solid;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+input[type="text"] {
+  border: 0;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+ul li.selected {
+  font-size: 18px;
+}
+
+ul li.selected > * {
+  font-size: 14px;
+}
