@@ -14,7 +14,11 @@ input[type="text"] {
 }
 
 ul li {
-  list-style-type: disc;
+  list-style-type: none;
+  padding: 0;
+  margin-left: -35px;
+  background: url(./right.png) no-repeat left top;
+  padding-left: 20px;
 }
 
 ul li.selected {
@@ -23,4 +27,8 @@ ul li.selected {
 
 ul li.selected > * {
   font-size: 14px;
+}
+
+ul li span, ul li input {
+  user-select: none;
 }

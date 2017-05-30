@@ -22,6 +22,16 @@ function refreshList() {
   list.appendChild(listItems);
 }
 
+function getIndexInItems(item, items) {
+  var index = -1;
+  items.forEach(function(obj, i) {
+    if(obj.id === item.id) {
+      index = i;
+    }
+  });
+  return index;
+}
+
 
 function createInputDiv(item, items, parent) {
 
@@ -43,15 +53,11 @@ function createInputDiv(item, items, parent) {
       var index = -1;
       if(event.keyCode === 13) {
         //onEnter
-        item.label = this.value;
-        items.forEach(function(obj, i) {
-          if(obj.id === item.id) {
-            index = i;
-          }
-        });
+        index = getIndexInItems(item, items);
         items.splice(index+1, 0, {
           label: '',
-          id: uniqueId++
+          id: uniqueId++,
+          parent: parent
         });
         editable = uniqueId - 1;
         refreshList();
@@ -60,28 +66,40 @@ function createInputDiv(item, items, parent) {
         if(event.shiftKey && parent) {
           //IF shift+tab is pressed
           event.preventDefault();
-          editable = parent.id;
-          refreshList();
-        } else {
-          item.label = this.value;
-          if(!item.children) {
-            item.children = [];
+          // first remove from current
+          index = getIndexInItems(item, items);
+          items.splice(index , 1);
+          //add to parents parent
+          var nodesTobeAddedArr;
+          if(!parent.parent) {
+            nodesTobeAddedArr = content;
+          } else {
+            nodesTobeAddedArr = parent.parent.children;
           }
-          item.children.push({
-            label: '',
-            id: uniqueId++
-          });
-          editable = uniqueId - 1;
+          var addIndex = getIndexInItems(parent, nodesTobeAddedArr);
+          item.parent = parent.parent;
+          nodesTobeAddedArr.splice(addIndex+1, 0, item);
+          editable = item.id;
+          refreshList();
+        } else if(this.value) {
+          event.preventDefault();
+          //add child only if there is value
+          index = getIndexInItems(item, items);
+          if(index !== -1 && index !== 0) {
+            items.splice(index , 1);
+            if(!items[index - 1].children) {
+              items[index - 1].children = [];
+            }
+            item.parent =  items[index - 1];
+            items[index - 1].children.push(item);
+            editable = item.id;
+          }
         }
 
         refreshList();
       } else if(event.keyCode === 8 && this.value === '') {
         //on BackSpace when empty
-        items.forEach(function(obj, i) {
-          if(obj.id === item.id) {
-            index = i;
-          }
-        });
+        index = getIndexInItems(item, items);
         items.splice(index , 1);
         if(items.length === 0) {
           if(!parent) {
